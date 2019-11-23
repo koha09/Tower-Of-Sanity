@@ -9,8 +9,11 @@ public class FollowCamera : MonoBehaviour
     [Header("Camera Target")]
     [SerializeField] [HideInInspector]
     public CameraTarget target;
+
+    [Header("Отступ слежения за игроком и плавность")]
     public Vector3 followOffset = new Vector3(0,0,-20);
     public float Smoothness = 5f;
+    public float FreeRange = 0.2f;
 
     [Header("Границы уровня")]
     public float maxBottom = -5;
@@ -57,7 +60,7 @@ public class FollowCamera : MonoBehaviour
     
     private void HandleMoveCamera()
     {
-        if ((targetPos - transform.position).magnitude > 0.1f)
+        if ((targetPos - transform.position).magnitude > (FreeRange/10f))
         {
             //Move camera
             transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref curVelocity, 1f / Smoothness, Mathf.Infinity, Time.deltaTime);

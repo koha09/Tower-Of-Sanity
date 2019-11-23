@@ -8,21 +8,24 @@ using UnityEngine;
 /// <summary>
 /// Характеристики Персонажа (Игрока)
 /// </summary>
+[CreateAssetMenu(fileName ="CharacterData",menuName ="GameData/CharacterData")]
 [System.Serializable]
 public class CharacterData : ScriptableObject 
 {
     /// <summary>
     /// В каком мире находится персонаж сейчас
     /// </summary>
-    public E_CharacterWorld CurrentWorldState;
+    public E_CharacterWorld CurrentWorldState { get; private set; }
 
     [SerializeField] private float sanity;
 
-    // Fields -----------------------------------------------------------------------------------
-    public float SanityAbs { get { return Mathf.Abs(sanity); } }
+    public float SanityInt { get { return Mathf.RoundToInt(sanity); } }
 
-	//  Methods ---------------------------------------------------------------------------------
-
+	//TODO вынести в контроллер
+    public void ChangeWorld(E_CharacterWorld world)
+    {
+        CurrentWorldState = world;
+    }
 }
 
 public enum E_CharacterWorld
