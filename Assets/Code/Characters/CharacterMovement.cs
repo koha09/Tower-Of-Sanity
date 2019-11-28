@@ -15,6 +15,7 @@
 // Подкаты
 
 
+using System;
 using UnityEngine;
 
 
@@ -23,7 +24,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class CharacterMovement : MonoBehaviour 
+public class CharacterMovement : MonoBehaviour
 {
 
     //  Private ---------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ public class CharacterMovement : MonoBehaviour
     private float maxSpeed;
 
     // Public -----------------------------------------------------------------------------------
-
+    public bool IsPlayer;
     [Header("Настройки перемещения")]
     public float MaxWalkSpeed = 1f;
     public float moveForce = 8f;
@@ -44,7 +45,7 @@ public class CharacterMovement : MonoBehaviour
 
     [Header("Настройка Бега")]
     public float MaxRunSpeed = 10f;
-    private bool willRun;
+    internal bool willRun;
 
     [Header("Настройка прыжка")]
     public float JumpForce = 10f;
@@ -58,17 +59,29 @@ public class CharacterMovement : MonoBehaviour
     [Header("Настройка Переката")]
     private bool willRollover;
 
+    //TODO move fields to another scripts like CharFieling
+    public float stoppingDistance = .2f;
+    internal float remainingDistance
+    {
+        get { return Vector2.Distance(transform.position, destination); }
+    }
+    internal bool pathPending;
+    private Vector3 destination;
+
+    public bool isStopped { get; internal set; }
+    public Vector3 Destination { get => destination; internal set => destination = value; }
+
     //  Initialization --------------------------------------------------------------------------
 
     #region  Unity Run Methods ---------------------------------------------------------------------------
-    protected void Start () 
-	{
+    protected void Start()
+    {
         groundChecker = transform.Find("GroundChecker");
         rigid = GetComponent<Rigidbody2D>();
 
     }
 
-	protected void FixedUpdate ()
+    protected void FixedUpdate()
     {
         if (willRun)
         {
@@ -95,6 +108,34 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
+        if (IsPlayer)
+        {
+            PlayerControllInput();
+        }
+        else
+        {
+            EnemyControllInput();
+        }
+    }
+
+    #endregion
+
+    //  Methods ---------------------------------------------------------------------------------
+
+
+    private void EnemyControllInput()
+    {
+        if(isStopped)
+        {
+            moveInput = Vector2.zero;
+        } else
+        {
+             moveInput = (destination - transform.position).normalized;
+        }
+    }
+
+    private void PlayerControllInput()
+    {
         //TODO Подтягивать клавиши управления из Настроек Игры 
 
         PressedMoveLeftOrRight();
@@ -108,11 +149,6 @@ public class CharacterMovement : MonoBehaviour
         if (!willJump && willRun && PressedCrouch())
             willRollover = true;
     }
-
-    #endregion
-
-    //  Methods ---------------------------------------------------------------------------------
- 
     private void PressedMoveLeftOrRight()
     {
         //TODO если нужно чтобы игрок не перемещал персонажа влево/право в прыжке, расскомментируй строчку ниже

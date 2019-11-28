@@ -56,6 +56,10 @@ public class WayPointsPath2D: MonoBehaviour
     {
         return PathPoints.ToArray();
     }
+    public List<Vector3> GetAllPointsAsList()
+    {
+        return PathPoints;
+    }
     public float[] GetAllPointsTime()
     {
         return Times.ToArray();

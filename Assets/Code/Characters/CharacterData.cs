@@ -28,6 +28,7 @@ public class CharacterData : ScriptableObject
     }
 }
 
+[System.Serializable]
 public enum E_CharacterWorld
 {
     NONE=0,
